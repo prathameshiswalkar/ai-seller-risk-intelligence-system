@@ -19,8 +19,12 @@ from langchain_huggingface import HuggingFaceEmbeddings
 import pathlib
 
 BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
+
 INDEX_PATH = BASE_DIR / "models" / "seller_memory_index"
 
+print("BASE_DIR:", BASE_DIR)
+print("INDEX_PATH:", INDEX_PATH)
+print("INDEX EXISTS:", INDEX_PATH.exists())
 # ---------------------------------------------------
 # Gemini Client
 # ---------------------------------------------------
@@ -69,42 +73,29 @@ embedding_model = load_embedding_model()
 def load_vector_store():
 
     if not INDEX_PATH.exists():
-        st.error(f"FAISS index not found: {INDEX_PATH}")
+        st.error(f"Vector index folder missing: {INDEX_PATH}")
+        return None
+
+    faiss_file = INDEX_PATH / "index.faiss"
+    pkl_file = INDEX_PATH / "index.pkl"
+
+    if not faiss_file.exists() or not pkl_file.exists():
+        st.error("FAISS index files missing.")
         return None
 
     try:
-        return FAISS.load_local(
+        vector_store = FAISS.load_local(
             str(INDEX_PATH),
             embedding_model,
             allow_dangerous_deserialization=True
         )
 
+        st.success("Vector store loaded successfully")
+        return vector_store
+
     except Exception as e:
-
-        st.warning("FAISS metadata incompatibility detected. Rebuilding vector store.")
-
-        try:
-            import pickle
-            from langchain_community.vectorstores import FAISS
-
-            index_file = INDEX_PATH / "index.faiss"
-
-            if not index_file.exists():
-                st.error("FAISS index file missing.")
-                return None
-
-            vector_store = FAISS.load_local(
-                str(INDEX_PATH),
-                embedding_model,
-                allow_dangerous_deserialization=True
-            )
-
-            return vector_store
-
-        except Exception as e2:
-            st.error(f"FAISS load error: {e2}")
-            return None
-        
+        st.error(f"FAISS load error: {e}")
+        return None        
 vector_store = load_vector_store()
 
 # ---------------------------------------------------
