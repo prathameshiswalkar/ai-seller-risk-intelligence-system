@@ -21,7 +21,7 @@ INDEX_PATH = os.path.join(BASE_DIR, "models", "seller_memory_index")
 
 
 # ---------------------------------------------------
-# Gemini Client (cached)
+# Gemini Client
 # ---------------------------------------------------
 
 @st.cache_resource
@@ -30,7 +30,7 @@ def load_gemini_client():
     api_key = os.getenv("GEMINI_API_KEY")
 
     if not api_key:
-        print("WARNING: GEMINI_API_KEY not found")
+        st.warning("GEMINI_API_KEY not configured. GenAI features disabled.")
         return None
 
     try:
@@ -38,9 +38,9 @@ def load_gemini_client():
             return genai.Client(api_key=api_key)
         else:
             genai.configure(api_key=api_key)
-            return None
+            return genai
     except Exception as e:
-        print(f"Gemini client error: {e}")
+        st.error(f"Gemini client error: {e}")
         return None
 
 
@@ -53,6 +53,7 @@ client = load_gemini_client()
 
 @st.cache_resource
 def load_embedding_model():
+
     return HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
@@ -98,16 +99,21 @@ def generate_risk_report(prompt):
     try:
 
         if NEW_API:
+
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=prompt
             )
+
             return response.text
 
         else:
-            model = genai.GenerativeModel("gemini-2.5-flash")
+
+            model = client.GenerativeModel("gemini-2.5-flash")
             response = model.generate_content(prompt)
+
             return response.text
 
     except Exception as e:
+
         return f"Gemini error: {str(e)}"

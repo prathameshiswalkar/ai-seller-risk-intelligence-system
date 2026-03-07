@@ -10,10 +10,7 @@ if PROJECT_ROOT not in sys.path:
 
 from src.inference.sentiment_engine import analyze_sentiment
 
-st.set_page_config(
-    page_title="Sentiment Intelligence",
-    layout="wide"
-)
+
 
 st.title("Review Sentiment Intelligence")
 st.markdown("Deep Learning Powered Seller Review Analysis (BERT-based Model)")

@@ -11,7 +11,6 @@ if PROJECT_ROOT not in sys.path:
 
 from src.inference.risk_engine import calculate_risk_level
 
-st.set_page_config(page_title="Seller Risk AI", layout="wide")
 
 # Load Seller Data
 @st.cache_data

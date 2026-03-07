@@ -9,8 +9,6 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# Page Config
-st.set_page_config(page_title="Seller Dashboard", layout="wide")
 
 st.title("Seller Performance Dashboard")
 st.markdown("Comprehensive Seller Health & Risk Intelligence Overview")
