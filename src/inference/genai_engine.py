@@ -27,7 +27,7 @@ INDEX_PATH = os.path.join(BASE_DIR, "models", "seller_memory_index")
 @st.cache_resource
 def load_gemini_client():
 
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = st.secrets.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY"))
 
     if not api_key:
         st.warning("GEMINI_API_KEY not configured. GenAI features disabled.")
@@ -42,8 +42,7 @@ def load_gemini_client():
     except Exception as e:
         st.error(f"Gemini client error: {e}")
         return None
-
-
+    
 client = load_gemini_client()
 
 
