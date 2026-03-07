@@ -3,38 +3,47 @@ import pandas as pd
 import sys
 import os
 
+# --------------------------------------------------
 # Add project root to Python path
+# --------------------------------------------------
+
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(ROOT_DIR)
 
-
-# Page Config
+# --------------------------------------------------
+# Streamlit Page Configuration
+# --------------------------------------------------
 
 st.set_page_config(
     page_title="Seller Intelligence Platform",
-    layout="wide",
+    layout="wide"
 )
 
-
+# --------------------------------------------------
 # Header Section
+# --------------------------------------------------
 
-st.markdown("""
-# Seller Intelligence Platform  
-### AI-Powered Risk & Performance Analytics for E-Commerce Marketplaces
-""")
+st.title("Seller Intelligence Platform")
+st.subheader("AI-Powered Risk & Performance Analytics for E-Commerce Marketplaces")
 
-st.markdown("""
+st.markdown(
+"""
 Transforming raw marketplace data into actionable business intelligence using  
-**Machine Learning • Deep Learning • Generative AI • RAG Memory Systems**
-""")
+
+Machine Learning • Deep Learning • Generative AI • RAG Memory Systems
+"""
+)
 
 st.divider()
 
-
+# --------------------------------------------------
 # Load Data for Business Metrics
+# --------------------------------------------------
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DATA_PATH = os.path.join(BASE_DIR, "data", "processed", "seller_master.csv")
+DATA_PATH = os.path.join(ROOT_DIR, "data", "processed", "seller_master.csv")
+
 if os.path.exists(DATA_PATH):
+
     df = pd.read_csv(DATA_PATH)
 
     total_sellers = len(df)
@@ -54,8 +63,9 @@ else:
 
 st.divider()
 
-
+# --------------------------------------------------
 # Platform Capabilities Section
+# --------------------------------------------------
 
 st.subheader("Platform Intelligence Capabilities")
 
@@ -101,24 +111,31 @@ with col4:
 
 st.divider()
 
-
-# Architecture Overview
+# --------------------------------------------------
+# System Architecture
+# --------------------------------------------------
 
 st.subheader("System Architecture")
 
 st.markdown("""
-**Data Layer** → Seller Metrics + Reviews  
-**ML Layer** → XGBoost Risk Prediction  
-**DL Layer** → BERT Sentiment Model  
-**GenAI Layer** → Gemini Advisory Engine  
-**Memory Layer** → FAISS Vector Database  
-**Application Layer** → Streamlit Web Interface  
+Data Layer → Seller Metrics + Reviews  
+
+ML Layer → XGBoost Risk Prediction  
+
+DL Layer → BERT Sentiment Model  
+
+GenAI Layer → Gemini Advisory Engine  
+
+Memory Layer → FAISS Vector Database  
+
+Application Layer → Streamlit Web Interface
 """)
 
 st.divider()
 
-
-# Business Impact Section
+# --------------------------------------------------
+# Business Impact
+# --------------------------------------------------
 
 st.subheader("Business Impact")
 
@@ -132,11 +149,14 @@ st.markdown("""
 
 st.divider()
 
-
+# --------------------------------------------------
 # Footer
+# --------------------------------------------------
+
 st.markdown("""
 ---
 
-**Developed as an End-to-End AI Business Intelligence System**  
+Developed as an End-to-End AI Business Intelligence System  
+
 Capstone Project — ML + DL + GenAI + Web Application
 """)
