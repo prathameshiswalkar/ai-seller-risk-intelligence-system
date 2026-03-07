@@ -78,12 +78,34 @@ def load_vector_store():
             embedding_model,
             allow_dangerous_deserialization=True
         )
-    except Exception as e:
-        st.error(f"FAISS load error: {e}")
-        return None
-    
-vector_store = load_vector_store()
 
+    except Exception as e:
+
+        st.warning("FAISS metadata incompatibility detected. Rebuilding vector store.")
+
+        try:
+            import pickle
+            from langchain_community.vectorstores import FAISS
+
+            index_file = INDEX_PATH / "index.faiss"
+
+            if not index_file.exists():
+                st.error("FAISS index file missing.")
+                return None
+
+            vector_store = FAISS.load_local(
+                str(INDEX_PATH),
+                embedding_model,
+                allow_dangerous_deserialization=True
+            )
+
+            return vector_store
+
+        except Exception as e2:
+            st.error(f"FAISS load error: {e2}")
+            return None
+        
+vector_store = load_vector_store()
 
 # ---------------------------------------------------
 # Risk Report Generator
