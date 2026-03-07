@@ -7,8 +7,7 @@ __pycache__/
 venv/
 .venv/
 
-models/*.pkl
-models/*.faiss
+
 models/*.index
 
 data/raw/
