@@ -16,9 +16,10 @@ from langchain_huggingface import HuggingFaceEmbeddings
 # Paths
 # ---------------------------------------------------
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-INDEX_PATH = os.path.join(BASE_DIR, "models", "seller_memory_index")
+import pathlib
 
+BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
+INDEX_PATH = BASE_DIR / "models" / "seller_memory_index"
 
 # ---------------------------------------------------
 # Gemini Client
@@ -64,25 +65,23 @@ embedding_model = load_embedding_model()
 # ---------------------------------------------------
 # FAISS Vector Store
 # ---------------------------------------------------
-
 @st.cache_resource
 def load_vector_store():
 
-    if not os.path.exists(INDEX_PATH):
-        print(f"WARNING: FAISS index not found at {INDEX_PATH}")
+    if not INDEX_PATH.exists():
+        st.error(f"FAISS index not found: {INDEX_PATH}")
         return None
 
     try:
         return FAISS.load_local(
-            INDEX_PATH,
+            str(INDEX_PATH),
             embedding_model,
             allow_dangerous_deserialization=True
         )
     except Exception as e:
-        print(f"WARNING: Could not load FAISS index: {e}")
+        st.error(f"FAISS load error: {e}")
         return None
-
-
+    
 vector_store = load_vector_store()
 
 
