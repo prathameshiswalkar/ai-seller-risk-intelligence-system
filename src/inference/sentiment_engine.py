@@ -1,11 +1,28 @@
+import streamlit as st
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 
 MODEL_NAME = "nlptown/bert-base-multilingual-uncased-sentiment"
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
-model.eval()
+
+@st.cache_resource
+def load_sentiment_model():
+
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+
+    model.eval()
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    model.to(device)
+
+    return tokenizer, model, device
+
+
+tokenizer, model, device = load_sentiment_model()
+
 
 def analyze_sentiment(text):
 
@@ -15,7 +32,7 @@ def analyze_sentiment(text):
         truncation=True,
         padding=True,
         max_length=256
-    )
+    ).to(device)
 
     with torch.no_grad():
         outputs = model(**inputs)
