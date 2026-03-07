@@ -1,0 +1,14 @@
+.env
+.env.txt
+notebook/.env
+
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+models/*.pkl
+models/*.faiss
+models/*.index
+
+data/raw/
