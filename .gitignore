@@ -14,3 +14,5 @@ venv/
 # Data folders
 data/raw/
 
+.ipynb_checkpoints/
+
