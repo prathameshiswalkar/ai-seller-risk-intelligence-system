@@ -14,5 +14,3 @@ venv/
 # Data folders
 data/raw/
 
-# Model index files
-models/*.index
