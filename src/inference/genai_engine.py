@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 
-# try either of the two GenAI packages; fall back gracefully if neither
+# try both GenAI packages
 try:
     import google.genai as genai
     NEW_API = True
@@ -17,10 +17,9 @@ from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 import pathlib
 
-
-# ---------------------------------------------------
-# Paths (project root → models/seller_memory_index)
-# ---------------------------------------------------
+# ------------------------------------------------------------------
+# paths
+# ------------------------------------------------------------------
 BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
 INDEX_PATH = BASE_DIR / "models" / "seller_memory_index"
 
@@ -28,13 +27,10 @@ print("BASE_DIR:", BASE_DIR)
 print("INDEX_PATH:", INDEX_PATH)
 print("INDEX EXISTS:", INDEX_PATH.exists())
 
-
-# ---------------------------------------------------
+# ------------------------------------------------------------------
 # Gemini client
-# ---------------------------------------------------
-
+# ------------------------------------------------------------------
 @st.cache_resource
-
 def load_gemini_client():
     api_key = st.secrets.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY"))
     if not api_key or genai is None:
@@ -51,37 +47,32 @@ def load_gemini_client():
         st.error(f"Gemini client error: {e}")
         return None
 
-
 client = load_gemini_client()
 
-
-# ---------------------------------------------------
-# Embeddings
-# ---------------------------------------------------
+# ------------------------------------------------------------------
+# embeddings
+# ------------------------------------------------------------------
 @st.cache_resource
 def load_embedding_model():
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-
 embedding_model = load_embedding_model()
 
-
-# ---------------------------------------------------
-# FAISS vector store
-# ---------------------------------------------------
+# ------------------------------------------------------------------
+# vector store
+# ------------------------------------------------------------------
 @st.cache_resource
 def load_vector_store():
     if not INDEX_PATH.exists():
-        st.error(f"Vector‑index directory does not exist: {INDEX_PATH}")
+        st.error(f"Vector‑index folder does not exist: {INDEX_PATH}")
         return None
 
     faiss_file = INDEX_PATH / "index.faiss"
     pkl_file   = INDEX_PATH / "index.pkl"
     if not faiss_file.exists() or not pkl_file.exists():
         st.error(
-            "FAISS index files missing – run the script that builds the index "
-            "and place the resulting `index.faiss`/`index.pkl` under "
-            "`models/seller_memory_index`."
+            "FAISS index files missing – build them with `scripts/build_index.py` "
+            "or copy them into models/seller_memory_index."
         )
         return None
 
@@ -97,13 +88,11 @@ def load_vector_store():
         st.error(f"FAISS load error: {e}")
         return None
 
-
 vector_store = load_vector_store()
 
-
-# ---------------------------------------------------
+# ------------------------------------------------------------------
 # risk‑report helper
-# ---------------------------------------------------
+# ------------------------------------------------------------------
 def generate_risk_report(prompt: str) -> str:
     if client is None:
         return "Gemini API not configured."
