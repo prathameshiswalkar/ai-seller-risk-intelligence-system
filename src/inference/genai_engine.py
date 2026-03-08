@@ -95,7 +95,8 @@ def load_vector_store():
 
     except Exception as e:
         st.error(f"FAISS load error: {e}")
-        return None        
+        return None
+            
 vector_store = load_vector_store()
 
 # ---------------------------------------------------
