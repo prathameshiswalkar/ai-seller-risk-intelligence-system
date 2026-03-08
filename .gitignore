@@ -1,0 +1,18 @@
+# Environment variables
+.env
+.env.txt
+notebook/.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+
+# Data folders
+data/raw/
+
+# Model index files
+models/*.index
