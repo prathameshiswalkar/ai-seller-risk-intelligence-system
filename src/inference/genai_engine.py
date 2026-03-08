@@ -10,21 +10,22 @@ except ImportError:
 
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-
-
-# ---------------------------------------------------
-# Paths
-# ---------------------------------------------------
-
 import pathlib
 
-BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
+
+# ---------------------------------------------------
+# Paths (FIXED FOR STREAMLIT CLOUD)
+# ---------------------------------------------------
+
+BASE_DIR = pathlib.Path.cwd()
 
 INDEX_PATH = BASE_DIR / "models" / "seller_memory_index"
 
-print("BASE_DIR:", BASE_DIR)
-print("INDEX_PATH:", INDEX_PATH)
-print("INDEX EXISTS:", INDEX_PATH.exists())
+st.write("BASE_DIR:", BASE_DIR)
+st.write("INDEX_PATH:", INDEX_PATH)
+st.write("INDEX EXISTS:", INDEX_PATH.exists())
+
+
 # ---------------------------------------------------
 # Gemini Client
 # ---------------------------------------------------
@@ -47,7 +48,8 @@ def load_gemini_client():
     except Exception as e:
         st.error(f"Gemini client error: {e}")
         return None
-    
+
+
 client = load_gemini_client()
 
 
@@ -69,6 +71,7 @@ embedding_model = load_embedding_model()
 # ---------------------------------------------------
 # FAISS Vector Store
 # ---------------------------------------------------
+
 @st.cache_resource
 def load_vector_store():
 
@@ -96,8 +99,10 @@ def load_vector_store():
     except Exception as e:
         st.error(f"FAISS load error: {e}")
         return None
-            
+
+
 vector_store = load_vector_store()
+
 
 # ---------------------------------------------------
 # Risk Report Generator
