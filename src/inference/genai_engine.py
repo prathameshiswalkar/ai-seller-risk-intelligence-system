@@ -17,13 +17,13 @@ import pathlib
 # Paths (FIXED FOR STREAMLIT CLOUD)
 # ---------------------------------------------------
 
-BASE_DIR = pathlib.Path.cwd()
+BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
 
 INDEX_PATH = BASE_DIR / "models" / "seller_memory_index"
 
-st.write("BASE_DIR:", BASE_DIR)
-st.write("INDEX_PATH:", INDEX_PATH)
-st.write("INDEX EXISTS:", INDEX_PATH.exists())
+print("BASE_DIR:", BASE_DIR)
+print("INDEX_PATH:", INDEX_PATH)
+print("INDEX EXISTS:", INDEX_PATH.exists())
 
 
 # ---------------------------------------------------
@@ -76,14 +76,14 @@ embedding_model = load_embedding_model()
 def load_vector_store():
 
     if not INDEX_PATH.exists():
-        st.error(f"Vector index folder missing: {INDEX_PATH}")
+        print(f"Vector index folder missing: {INDEX_PATH}")
         return None
 
     faiss_file = INDEX_PATH / "index.faiss"
     pkl_file = INDEX_PATH / "index.pkl"
 
     if not faiss_file.exists() or not pkl_file.exists():
-        st.error("FAISS index files missing.")
+        print("FAISS index files missing.")
         return None
 
     try:
@@ -93,11 +93,11 @@ def load_vector_store():
             allow_dangerous_deserialization=True
         )
 
-        st.success("Vector store loaded successfully")
+        print("FAISS vector store loaded successfully")
         return vector_store
 
     except Exception as e:
-        st.error(f"FAISS load error: {e}")
+        print(f"FAISS load error: {e}")
         return None
 
 
