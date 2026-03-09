@@ -60,11 +60,13 @@ try:
 
         for _, row in df.iterrows():
 
+            negative_rate = row.get("negative_rate", 0)
+
             text = f"""
             Seller ID: {row['seller_id']}
             Revenue: {row['total_revenue']}
             Late Delivery Rate: {row['late_delivery_rate']}
-            Negative Review Rate: {row['negative_review_rate']}
+            Negative Review Rate: {negative_rate}
             Seller Health Index: {row['seller_health_index_v2']}
             """
 
@@ -84,3 +86,23 @@ except Exception as e:
 
     print("FAISS loading error:", e)
     vector_store = None
+
+def generate_risk_report(seller_data):
+
+    return f"""
+Seller Risk Analysis
+
+Seller ID: {seller_data.get('seller_id')}
+
+Metrics
+Revenue: {seller_data.get('total_revenue')}
+Late Delivery Rate: {seller_data.get('late_delivery_rate')}
+Negative Review Rate: {seller_data.get('negative_rate')}
+Health Index: {seller_data.get('seller_health_index_v2')}
+
+Risk Assessment:
+Seller performance indicates operational improvement opportunities.
+
+Recommendation:
+Investigate delivery logistics and customer feedback trends.
+"""
