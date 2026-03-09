@@ -7,12 +7,16 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
+import importlib
+
 vector_store = None
 import_error = None
 INDEX_PATH = None
 
 try:
-    from src.inference.genai_engine import vector_store, INDEX_PATH
+    genai_engine = importlib.import_module('src.inference.genai_engine')
+    vector_store = genai_engine.vector_store
+    INDEX_PATH = genai_engine.INDEX_PATH
 except Exception as e:
     vector_store = None
     import_error = str(e)

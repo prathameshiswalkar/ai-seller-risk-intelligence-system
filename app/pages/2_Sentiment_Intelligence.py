@@ -8,7 +8,9 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from src.inference.sentiment_engine import analyze_sentiment
+import importlib
+sentiment_engine = importlib.import_module('src.inference.sentiment_engine')
+analyze_sentiment = sentiment_engine.analyze_sentiment
 
 
 

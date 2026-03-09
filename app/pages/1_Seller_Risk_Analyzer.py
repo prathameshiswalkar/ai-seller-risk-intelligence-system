@@ -8,7 +8,9 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from src.inference.genai_engine import generate_risk_report
+import importlib
+genai_engine = importlib.import_module('src.inference.genai_engine')
+generate_risk_report = genai_engine.generate_risk_report
 
 st.title("Seller Risk Analyzer")
 

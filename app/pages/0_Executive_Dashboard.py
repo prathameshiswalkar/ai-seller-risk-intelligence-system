@@ -9,7 +9,9 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from src.inference.risk_engine import calculate_risk_level
+import importlib
+risk_engine = importlib.import_module('src.inference.risk_engine')
+calculate_risk_level = risk_engine.calculate_risk_level
 
 
 # Load Seller Data

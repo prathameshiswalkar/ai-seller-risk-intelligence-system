@@ -9,8 +9,8 @@ from langchain_core.documents import Document
 
 import google.generativeai as genai
 
-# Suppress huggingface_hub deprecation warnings
-warnings.filterwarnings("ignore", category=FutureWarning, module="huggingface_hub")
+# Suppress huggingface warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # --------------------------------------------------
 # Project Paths
@@ -23,22 +23,63 @@ DATA_PATH = BASE_DIR / "data" / "processed" / "seller_master.csv"
 
 print("BASE_DIR:", BASE_DIR)
 print("INDEX_PATH:", INDEX_PATH)
-print("INDEX EXISTS:", INDEX_PATH.exists())
 
 vector_store = None
 
-try:
 
-    # Load embedding model
+def build_faiss_index():
+    """Build FAISS index from seller dataset"""
+
+    if not DATA_PATH.exists():
+        raise FileNotFoundError(f"Dataset not found: {DATA_PATH}")
+
+    df = pd.read_csv(DATA_PATH)
+
+    documents = []
+
+    for row in df.itertuples():
+
+        negative_rate = getattr(row, "negative_rate", 0)
+
+        text = f"""
+        Seller ID: {row.seller_id}
+        Revenue: {row.total_revenue}
+        Late Delivery Rate: {row.late_delivery_rate}
+        Negative Review Rate: {negative_rate}
+        Seller Health Index: {row.seller_health_index_v2}
+        """
+
+        documents.append(Document(page_content=text))
+
+    print("Documents created:", len(documents))
+
     embedding_model = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
+    vs = FAISS.from_documents(documents, embedding_model)
+
+    INDEX_PATH.mkdir(parents=True, exist_ok=True)
+    vs.save_local(str(INDEX_PATH))
+
+    print("FAISS index built successfully")
+
+    return vs
+
+
+try:
+
+    embedding_model = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+
+    faiss_file = INDEX_PATH / "index.faiss"
+
     # --------------------------------------------------
-    # CASE 1: Load existing FAISS index
+    # Load existing FAISS index
     # --------------------------------------------------
 
-    if INDEX_PATH.exists():
+    if faiss_file.exists():
 
         print("Loading existing FAISS index...")
 
@@ -51,58 +92,42 @@ try:
         print("FAISS loaded successfully")
 
     # --------------------------------------------------
-    # CASE 2: Build FAISS index automatically
+    # Build index automatically
     # --------------------------------------------------
 
     else:
 
         print("FAISS index not found. Building new index...")
 
-        df = pd.read_csv(DATA_PATH)
-
-        documents = []
-
-        for _, row in df.iterrows():
-
-            negative_rate = row["negative_rate"] if "negative_rate" in df.columns else 0
-
-            text = f"""
-            Seller ID: {row['seller_id']}
-            Revenue: {row['total_revenue']}
-            Late Delivery Rate: {row['late_delivery_rate']}
-            Negative Review Rate: {negative_rate}
-            Seller Health Index: {row['seller_health_index_v2']}
-            """
-
-            documents.append(Document(page_content=text))
-
-        print("Total documents:", len(documents))
-
-        vector_store = FAISS.from_documents(documents, embedding_model)
-
-        INDEX_PATH.mkdir(parents=True, exist_ok=True)
-
-        vector_store.save_local(str(INDEX_PATH))
-
-        print("FAISS index built and saved successfully")
+        vector_store = build_faiss_index()
 
 except Exception as e:
 
-    print("FAISS loading error:", e)
+    print("FAISS error:", e)
     vector_store = None
 
 
 # --------------------------------------------------
-# Risk Report Generator (used by Seller Risk Analyzer)
+# Gemini Risk Report Generator
 # --------------------------------------------------
 
-def generate_risk_report(prompt):
+def generate_risk_report(prompt: str):
 
     api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise ValueError("GEMINI_API_KEY environment variable not set")
 
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-1.0-pro")
-    response = model.generate_content(prompt)
-    return response.text
+    if not api_key:
+        return "GEMINI_API_KEY environment variable not set."
+
+    try:
+
+        genai.configure(api_key=api_key)
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
+
+        response = model.generate_content(prompt)
+
+        return response.text
+
+    except Exception as e:
+
+        return f"AI generation error: {str(e)}"
