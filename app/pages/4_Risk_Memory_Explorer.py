@@ -44,11 +44,35 @@ if st.button("Search"):
     else:
         try:
             results = vector_store.similarity_search(query, k=3)
-            if not results:
-                st.info("No similar risk cases found.")
-            else:
-                for i, doc in enumerate(results, start=1):
-                    st.markdown(f"### Similar Case {i}")
-                    st.write(doc.page_content)
+
+            context = ""
+
+            for i, doc in enumerate(results, start=1):
+                st.markdown(f"### Similar Case {i}")
+                st.write(doc.page_content)
+                context += doc.page_content + "\n"
+
+            # Generate explanation
+            prompt = f"""
+            You are an e-commerce risk analyst.
+
+            A user searched for: "{query}"
+
+            Here are similar historical seller risk cases:
+
+            {context}
+
+            Explain:
+            1. Why these sellers may be risky
+            2. What patterns exist
+            3. What business action should be taken
+
+            Keep explanation simple and business-friendly.
+            """
+
+            report = genai_engine.generate_risk_report(prompt)
+
+            st.markdown("## AI Risk Explanation")
+            st.write(report)
         except Exception as e:
             st.error(f"Search error: {e}")
