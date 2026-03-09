@@ -19,6 +19,8 @@ BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
 
 DATA_PATH = BASE_DIR / "data" / "processed" / "seller_master.csv"
 
+INDEX_PATH = BASE_DIR / "models" / "seller_memory_index"
+
 print("BASE_DIR:", BASE_DIR)
 print("DATA_PATH:", DATA_PATH)
 
@@ -69,15 +71,17 @@ def build_vector_store():
 # Initialize Vector Store
 # --------------------------------------------------
 
-try:
+import streamlit as st
 
-    vector_store = build_vector_store()
+@st.cache_resource
+def load_vector_store():
+    try:
+        return build_vector_store()
+    except Exception as e:
+        print("RAG initialization error:", e)
+        return None
 
-except Exception as e:
-
-    print("RAG initialization error:", e)
-
-    vector_store = None
+vector_store = load_vector_store()
 
 
 # --------------------------------------------------
