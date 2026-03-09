@@ -11,7 +11,6 @@ import importlib
 
 vector_store = None
 import_error = None
-INDEX_PATH = None
 
 try:
     genai_engine = importlib.import_module('src.inference.genai_engine')
@@ -29,9 +28,6 @@ query = st.text_input("Search Similar Risk Cases")
 with st.expander("System Debug Info"):
     st.write("Project Root:", PROJECT_ROOT)
     st.write("Vector store loaded:", vector_store is not None)
-    if INDEX_PATH is not None:
-        st.write("Index path:", INDEX_PATH)
-        st.write("Index exists:", INDEX_PATH.exists())
     if import_error:
         st.write("Import error:", import_error)
 
