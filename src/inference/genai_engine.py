@@ -60,12 +60,12 @@ try:
             negative_rate = row["negative_rate"] if "negative_rate" in df.columns else 0
 
             text = f"""
-Seller ID: {row['seller_id']}
-Revenue: {row['total_revenue']}
-Late Delivery Rate: {row['late_delivery_rate']}
-Negative Review Rate: {negative_rate}
-Seller Health Index: {row['seller_health_index_v2']}
-"""
+            Seller ID: {row['seller_id']}
+            Revenue: {row['total_revenue']}
+            Late Delivery Rate: {row['late_delivery_rate']}
+            Negative Review Rate: {negative_rate}
+            Seller Health Index: {row['seller_health_index_v2']}
+            """
 
             documents.append(Document(page_content=text))
 
@@ -92,19 +92,19 @@ except Exception as e:
 def generate_risk_report(seller_data):
 
     return f"""
-Seller Risk Analysis
+    Seller Risk Analysis
 
-Seller ID: {seller_data.get('seller_id')}
+    Seller ID: {seller_data.get('seller_id')}
 
-Metrics
-Revenue: {seller_data.get('total_revenue')}
-Late Delivery Rate: {seller_data.get('late_delivery_rate')}
-Negative Review Rate: {seller_data.get('negative_rate')}
-Health Index: {seller_data.get('seller_health_index_v2')}
+    Metrics
+    Revenue: {seller_data.get('total_revenue')}
+    Late Delivery Rate: {seller_data.get('late_delivery_rate')}
+    Negative Review Rate: {seller_data.get('negative_rate')}
+    Health Index: {seller_data.get('seller_health_index_v2')}
 
-Risk Assessment
-Seller performance indicates operational improvement opportunities.
+    Risk Assessment
+    Seller performance indicates operational improvement opportunities.
 
-Recommendation
-Investigate delivery logistics and customer feedback trends.
-"""
+    Recommendation
+    Investigate delivery logistics and customer feedback trends.
+    """
