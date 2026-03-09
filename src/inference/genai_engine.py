@@ -22,16 +22,13 @@ vector_store = None
 
 try:
 
-    # --------------------------------------------------
-    # Load Embedding Model
-    # --------------------------------------------------
-
+    # Load embedding model
     embedding_model = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
     # --------------------------------------------------
-    # CASE 1: FAISS index already exists → load it
+    # CASE 1: Load existing FAISS index
     # --------------------------------------------------
 
     if INDEX_PATH.exists():
@@ -47,7 +44,7 @@ try:
         print("FAISS loaded successfully")
 
     # --------------------------------------------------
-    # CASE 2: FAISS index missing → build automatically
+    # CASE 2: Build FAISS index automatically
     # --------------------------------------------------
 
     else:
@@ -60,15 +57,15 @@ try:
 
         for _, row in df.iterrows():
 
-            negative_rate = row.get("negative_rate", 0)
+            negative_rate = row["negative_rate"] if "negative_rate" in df.columns else 0
 
             text = f"""
-            Seller ID: {row['seller_id']}
-            Revenue: {row['total_revenue']}
-            Late Delivery Rate: {row['late_delivery_rate']}
-            Negative Review Rate: {negative_rate}
-            Seller Health Index: {row['seller_health_index_v2']}
-            """
+Seller ID: {row['seller_id']}
+Revenue: {row['total_revenue']}
+Late Delivery Rate: {row['late_delivery_rate']}
+Negative Review Rate: {negative_rate}
+Seller Health Index: {row['seller_health_index_v2']}
+"""
 
             documents.append(Document(page_content=text))
 
@@ -87,6 +84,11 @@ except Exception as e:
     print("FAISS loading error:", e)
     vector_store = None
 
+
+# --------------------------------------------------
+# Risk Report Generator (used by Seller Risk Analyzer)
+# --------------------------------------------------
+
 def generate_risk_report(seller_data):
 
     return f"""
@@ -100,9 +102,9 @@ Late Delivery Rate: {seller_data.get('late_delivery_rate')}
 Negative Review Rate: {seller_data.get('negative_rate')}
 Health Index: {seller_data.get('seller_health_index_v2')}
 
-Risk Assessment:
+Risk Assessment
 Seller performance indicates operational improvement opportunities.
 
-Recommendation:
+Recommendation
 Investigate delivery logistics and customer feedback trends.
 """
