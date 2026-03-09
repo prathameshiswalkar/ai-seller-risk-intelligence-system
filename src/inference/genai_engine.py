@@ -9,7 +9,6 @@ from langchain_core.documents import Document
 
 import google.generativeai as genai
 
-# Suppress huggingface warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 # --------------------------------------------------
@@ -18,17 +17,19 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
 
-INDEX_PATH = BASE_DIR / "models" / "seller_memory_index"
 DATA_PATH = BASE_DIR / "data" / "processed" / "seller_master.csv"
 
 print("BASE_DIR:", BASE_DIR)
-print("INDEX_PATH:", INDEX_PATH)
+print("DATA_PATH:", DATA_PATH)
 
 vector_store = None
 
 
-def build_faiss_index():
-    """Build FAISS index from seller dataset"""
+# --------------------------------------------------
+# Build RAG Vector Store From Dataset
+# --------------------------------------------------
+
+def build_vector_store():
 
     if not DATA_PATH.exists():
         raise FileNotFoundError(f"Dataset not found: {DATA_PATH}")
@@ -57,53 +58,25 @@ def build_faiss_index():
         model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
-    vs = FAISS.from_documents(documents, embedding_model)
+    vector_store = FAISS.from_documents(documents, embedding_model)
 
-    INDEX_PATH.mkdir(parents=True, exist_ok=True)
-    vs.save_local(str(INDEX_PATH))
+    print("Vector store created successfully")
 
-    print("FAISS index built successfully")
+    return vector_store
 
-    return vs
 
+# --------------------------------------------------
+# Initialize Vector Store
+# --------------------------------------------------
 
 try:
 
-    embedding_model = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
-
-    faiss_file = INDEX_PATH / "index.faiss"
-
-    # --------------------------------------------------
-    # Load existing FAISS index
-    # --------------------------------------------------
-
-    if faiss_file.exists():
-
-        print("Loading existing FAISS index...")
-
-        vector_store = FAISS.load_local(
-            str(INDEX_PATH),
-            embedding_model,
-            allow_dangerous_deserialization=True
-        )
-
-        print("FAISS loaded successfully")
-
-    # --------------------------------------------------
-    # Build index automatically
-    # --------------------------------------------------
-
-    else:
-
-        print("FAISS index not found. Building new index...")
-
-        vector_store = build_faiss_index()
+    vector_store = build_vector_store()
 
 except Exception as e:
 
-    print("FAISS error:", e)
+    print("RAG initialization error:", e)
+
     vector_store = None
 
 
