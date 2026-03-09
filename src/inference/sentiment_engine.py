@@ -1,6 +1,10 @@
 import streamlit as st
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
+import warnings
+
+# Suppress huggingface_hub deprecation warnings
+warnings.filterwarnings("ignore", category=FutureWarning, module="huggingface_hub")
 
 MODEL_NAME = "nlptown/bert-base-multilingual-uncased-sentiment"
 

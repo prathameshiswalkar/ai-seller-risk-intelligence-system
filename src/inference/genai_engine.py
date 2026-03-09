@@ -1,9 +1,16 @@
 import pathlib
 import pandas as pd
+import os
+import warnings
 
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
+
+import google.generativeai as genai
+
+# Suppress huggingface_hub deprecation warnings
+warnings.filterwarnings("ignore", category=FutureWarning, module="huggingface_hub")
 
 # --------------------------------------------------
 # Project Paths
@@ -89,22 +96,13 @@ except Exception as e:
 # Risk Report Generator (used by Seller Risk Analyzer)
 # --------------------------------------------------
 
-def generate_risk_report(seller_data):
+def generate_risk_report(prompt):
 
-    return f"""
-    Seller Risk Analysis
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY environment variable not set")
 
-    Seller ID: {seller_data.get('seller_id')}
-
-    Metrics
-    Revenue: {seller_data.get('total_revenue')}
-    Late Delivery Rate: {seller_data.get('late_delivery_rate')}
-    Negative Review Rate: {seller_data.get('negative_rate')}
-    Health Index: {seller_data.get('seller_health_index_v2')}
-
-    Risk Assessment
-    Seller performance indicates operational improvement opportunities.
-
-    Recommendation
-    Investigate delivery logistics and customer feedback trends.
-    """
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-1.0-pro")
+    response = model.generate_content(prompt)
+    return response.text
