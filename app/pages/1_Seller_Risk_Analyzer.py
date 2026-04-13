@@ -4,9 +4,6 @@ import streamlit as st
 import pandas as pd
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
-
 # Add project root to path in a way that works for Streamlit multipage execution
 APP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if APP_DIR not in sys.path:
@@ -15,6 +12,10 @@ if APP_DIR not in sys.path:
 from bootstrap import ensure_project_root
 
 PROJECT_ROOT = ensure_project_root()
+ENV_PATH = os.path.join(PROJECT_ROOT, ".env")
+
+# Load environment variables from the project root explicitly
+load_dotenv(dotenv_path=ENV_PATH)
 
 import importlib
 genai_engine = importlib.import_module('src.inference.genai_engine')

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 import streamlit as st
+from dotenv import load_dotenv
 from groq import Groq
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
@@ -19,6 +20,8 @@ BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
 DATA_PATH = BASE_DIR / "data" / "processed" / "seller_master.csv"
 INDEX_PATH = BASE_DIR / "models" / "seller_memory_index"
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+load_dotenv(BASE_DIR / ".env")
 
 
 def _row_to_document(row) -> Document:
