@@ -1,6 +1,7 @@
 import os
 import sys
 import streamlit as st
+from dotenv import load_dotenv
 
 # Add project root to path in a way that works for Streamlit multipage execution
 APP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -10,6 +11,7 @@ if APP_DIR not in sys.path:
 from bootstrap import ensure_project_root
 
 PROJECT_ROOT = ensure_project_root()
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 import importlib
 

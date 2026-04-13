@@ -24,6 +24,17 @@ EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 load_dotenv(BASE_DIR / ".env")
 
 
+def _get_groq_api_key():
+    api_key = os.getenv("GROQ_API_KEY")
+    if api_key:
+        return api_key
+
+    try:
+        return st.secrets.get("GROQ_API_KEY")
+    except Exception:
+        return None
+
+
 def _row_to_document(row) -> Document:
     negative_rate = getattr(row, "negative_rate", 0)
     risk_level = getattr(row, "risk_level", "UNKNOWN")
@@ -126,7 +137,7 @@ def get_vector_store():
 
 
 def generate_risk_report(prompt: str):
-    api_key = os.getenv("GROQ_API_KEY")
+    api_key = _get_groq_api_key()
 
     if not api_key:
         return "GROQ_API_KEY environment variable not set."
