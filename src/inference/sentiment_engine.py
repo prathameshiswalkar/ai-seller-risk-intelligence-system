@@ -61,6 +61,7 @@ def _heuristic_sentiment(text: str):
         "rating": rating,
         "confidence": max(probabilities),
         "probabilities": probabilities,
+        "used_fallback": True,
     }
 
 
@@ -97,4 +98,5 @@ def analyze_sentiment(text):
         "rating": rating,
         "confidence": confidence,
         "probabilities": probs.squeeze().tolist(),
+        "used_fallback": False,
     }

@@ -33,8 +33,9 @@ if st.button("Analyze Sentiment"):
 
             sentiment = result["sentiment"]
             rating = result["rating"]
-            confidence = result["confidence"]
+            confidence = result.get("confidence")
             probabilities = result["probabilities"]
+            used_fallback = result.get("used_fallback", False)
 
             st.divider()
 
@@ -52,7 +53,10 @@ if st.button("Analyze Sentiment"):
                 risk_impact = "Moderate Reputation Risk"
 
             col2.metric("Star Rating (1–5)", rating)
-            col3.metric("Model Confidence", f"{confidence*100:.2f}%")
+            if used_fallback:
+                col3.info("Confidence unavailable in fallback mode")
+            else:
+                col3.metric("Model Confidence", f"{confidence*100:.2f}%")
 
             st.divider()
 
