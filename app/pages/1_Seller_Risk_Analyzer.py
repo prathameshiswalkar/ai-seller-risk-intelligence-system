@@ -1,12 +1,20 @@
-import sys
 import os
+import sys
 import streamlit as st
 import pandas as pd
+from dotenv import load_dotenv
 
-# Add project root to path - works with Streamlit
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+# Load environment variables
+load_dotenv()
+
+# Add project root to path in a way that works for Streamlit multipage execution
+APP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if APP_DIR not in sys.path:
+    sys.path.insert(0, APP_DIR)
+
+from bootstrap import ensure_project_root
+
+PROJECT_ROOT = ensure_project_root()
 
 import importlib
 genai_engine = importlib.import_module('src.inference.genai_engine')
@@ -15,8 +23,8 @@ generate_risk_report = genai_engine.generate_risk_report
 st.title("Seller Risk Analyzer")
 
 # Check for API key
-if not os.getenv("GEMINI_API_KEY"):
-    st.warning("GEMINI_API_KEY environment variable not set. GenAI features disabled.")
+if not os.getenv("GROQ_API_KEY"):
+    st.warning("GROQ_API_KEY environment variable not set. GenAI features disabled.")
     st.info("Please set the environment variable before using this feature.")
 
 revenue = st.number_input("Revenue", 0.0)
@@ -42,7 +50,7 @@ if st.button("Analyze Seller"):
         st.write(report)
     except Exception as e:
         st.error(f"Error generating report: {e}")
-        st.info("Make sure GEMINI_API_KEY is set correctly.")
+        st.info("Make sure GROQ_API_KEY is set correctly.")
 
 if revenue <= 0:
     st.warning("Please enter valid revenue")

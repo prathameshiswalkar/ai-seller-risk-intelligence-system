@@ -116,9 +116,9 @@ When a user searches for a risk pattern, the system performs **similarity search
 
 ---
 
-### Step 3: AI Explanation with Gemini
+### Step 3: AI Explanation with Groq
 
-The retrieved cases are passed to **Google Gemini**, which generates an explanation describing:
+The retrieved cases are passed to **Groq**, which generates an explanation describing:
 
 * Risk patterns in the sellers
 * Possible causes of operational issues
@@ -143,7 +143,7 @@ FAISS Vector Database
       ↓
 Similarity Search
       ↓
-Gemini AI Explanation
+Groq AI Explanation
       ↓
 Interactive Streamlit Dashboard
 ```
@@ -159,7 +159,7 @@ Interactive Streamlit Dashboard
 * **FAISS Vector Database**
 * **HuggingFace Sentence Transformers**
 * **LangChain**
-* **Google Gemini API**
+* **Groq API**
 
 ---
 

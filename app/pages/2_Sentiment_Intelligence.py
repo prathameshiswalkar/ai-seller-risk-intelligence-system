@@ -1,12 +1,16 @@
-import sys
 import os
+import sys
 import streamlit as st
 import pandas as pd
 
-# Add project root to path - works with Streamlit
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+# Add project root to path in a way that works for Streamlit multipage execution
+APP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if APP_DIR not in sys.path:
+    sys.path.insert(0, APP_DIR)
+
+from bootstrap import ensure_project_root
+
+PROJECT_ROOT = ensure_project_root()
 
 import importlib
 sentiment_engine = importlib.import_module('src.inference.sentiment_engine')

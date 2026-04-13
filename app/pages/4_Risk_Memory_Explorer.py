@@ -1,11 +1,15 @@
-import sys
 import os
+import sys
 import streamlit as st
 
-# ensure project root is on sys.path so `src` imports work
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+# Add project root to path in a way that works for Streamlit multipage execution
+APP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if APP_DIR not in sys.path:
+    sys.path.insert(0, APP_DIR)
+
+from bootstrap import ensure_project_root
+
+PROJECT_ROOT = ensure_project_root()
 
 import importlib
 
@@ -14,7 +18,7 @@ import_error = None
 
 try:
     genai_engine = importlib.import_module('src.inference.genai_engine')
-    vector_store = genai_engine.vector_store
+    vector_store = genai_engine.get_vector_store()
     INDEX_PATH = genai_engine.INDEX_PATH
 except Exception as e:
     vector_store = None

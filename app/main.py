@@ -124,7 +124,7 @@ ML Layer → XGBoost Risk Prediction
 
 DL Layer → BERT Sentiment Model  
 
-GenAI Layer → Gemini Advisory Engine  
+GenAI Layer → Groq Advisory Engine  
 
 Memory Layer → FAISS Vector Database  
 
