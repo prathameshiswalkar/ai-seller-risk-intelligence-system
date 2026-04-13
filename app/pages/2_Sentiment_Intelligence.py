@@ -53,9 +53,7 @@ if st.button("Analyze Sentiment"):
                 risk_impact = "Moderate Reputation Risk"
 
             col2.metric("Star Rating (1–5)", rating)
-            if used_fallback:
-                col3.info("Confidence unavailable in fallback mode")
-            else:
+            if not used_fallback:
                 col3.metric("Model Confidence", f"{confidence*100:.2f}%")
 
             st.divider()
