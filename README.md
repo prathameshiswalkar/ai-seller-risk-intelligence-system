@@ -74,7 +74,7 @@ Olist Dataset (Raw)
 | DL / Sentiment | PyTorch 2.1, Hugging Face Transformers 4.41 |
 | Embeddings | Sentence Transformers 2.7 (`all-MiniLM-L6-v2`) |
 | Vector Search | FAISS-CPU 1.7, LangChain 0.1, LangChain Community |
-| Generative AI | Groq SDK 1.1, LLaMA 3.1-8B-Instant |
+| Generative AI | Groq SDK 1.1, GPT-OSS 20B (`openai/gpt-oss-20b`) |
 | Visualization | Matplotlib 3.8 |
 | Config / Secrets | python-dotenv 1.0, Streamlit Secrets |
 | Dataset | Olist Brazilian E-Commerce Public Dataset |
@@ -159,6 +159,17 @@ streamlit run app/main.py
 
 The app will open at `http://localhost:8501`.
 
+### Run the Tests
+
+Run the offline unit tests from the project root:
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+The optional `test_fixes.py` smoke check makes a live Groq API request and
+requires a valid `GROQ_API_KEY`.
+
 ## Configuration
 
 ### Groq API Key
@@ -168,6 +179,9 @@ The app checks for `GROQ_API_KEY` in this order:
 1. Environment variables
 2. `.env` in the project root
 3. Streamlit secrets
+
+The default Groq model is `openai/gpt-oss-20b`. Set `GROQ_MODEL` to use a
+different model enabled for your Groq account.
 
 For Streamlit Cloud, add this to app secrets:
 

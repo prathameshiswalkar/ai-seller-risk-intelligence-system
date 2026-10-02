@@ -16,3 +16,6 @@ data/raw/
 
 .ipynb_checkpoints/
 
+# Local Streamlit startup logs
+streamlit_run_*.log
+
