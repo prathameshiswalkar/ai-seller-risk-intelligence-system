@@ -1,5 +1,6 @@
 import joblib
 import os
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -27,29 +28,44 @@ def load_xgb_model():
     return model
 
 
-xgb_model = load_xgb_model()
-
-
 # --------------------------------------------------
 # Predict Late Delivery Probability
 # --------------------------------------------------
 
 def predict_late_probability(input_df: pd.DataFrame):
 
+    # These are the order-level fields used to train xgb_model.pkl in
+    # notebook/Late_delivery_analysis.ipynb. Keep the inference contract in
+    # sync with that model rather than the separate seller summary dataset.
     required_features = [
-        "total_revenue",
-        "late_delivery_rate",
-        "negative_rate",
-        "seller_health_index_v2"
+        "estimated_delivery_days",
+        "order_month",
+        "order_weekday",
+        "total_payment_value",
+        "avg_installments",
+        "total_price",
+        "total_freight",
+        "total_items",
+        "seller_late_rate",
     ]
 
     for col in required_features:
         if col not in input_df.columns:
             raise ValueError(f"Missing feature column: {col}")
 
-    prob = xgb_model.predict_proba(input_df)[:, 1]
+    if input_df.empty:
+        raise ValueError("At least one seller row is required for prediction")
 
-    return float(prob[0])
+    # Load only when prediction is requested. Dashboard pages that only need
+    # rule-based risk classification should remain usable without the artifact.
+    model = load_xgb_model()
+    probabilities = np.asarray(model.predict_proba(input_df))
+    if probabilities.ndim != 2 or probabilities.shape[0] != len(input_df):
+        raise ValueError("Model returned an invalid probability array")
+    if probabilities.shape[1] < 2:
+        raise ValueError("Model must return probabilities for both classes")
+
+    return float(probabilities[0, 1])
 
 
 # --------------------------------------------------

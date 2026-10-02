@@ -20,6 +20,7 @@ BASE_DIR = pathlib.Path(__file__).resolve().parents[2]
 DATA_PATH = BASE_DIR / "data" / "processed" / "seller_master.csv"
 INDEX_PATH = BASE_DIR / "models" / "seller_memory_index"
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 
 load_dotenv(BASE_DIR / ".env")
 
@@ -145,7 +146,7 @@ def generate_risk_report(prompt: str):
     try:
         client = Groq(api_key=api_key)
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model=GROQ_MODEL,
             messages=[
                 {
                     "role": "system",
